@@ -11,3 +11,15 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+/* styles.css */
+.pointer {
+  cursor: pointer;
+  color: red; /* Couleur par défaut */
+  transition: color 0.3s ease; /* Transition pour un effet plus fluide */
+}
+
+.pointer:hover {
+  color: blue; /* Couleur au survol */
+  text-decoration: underline; /* Soulignement au survol */
+}
+
