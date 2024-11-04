@@ -1,36 +1,49 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import AddTask from '../../components/TaskComponents/AddTask';
 import CardTask from '../../components/TaskComponents/CardTask';
+import AddTask from '../../components/TaskComponents/AddTask';
 
 function Task() {
   const [tasks, setTasks] = useState([]);
-  
-  useEffect(() => {
-    
+
+  const fetchTasks = () => {
     axios.get('http://localhost:8000/api/tasks')
       .then(res => setTasks(res.data))
       .catch(err => console.log(err));
-  }, [tasks]); // Enlever `tasks` de la dépendance pour éviter les appels infinis
+  };
+
+  useEffect(() => {
+    fetchTasks(); // Chargement initial des tâches
+  }, []);
 
   const deleteTask = (id) => {
     axios.delete(`http://localhost:8000/api/tasks/${id}`)
       .then(() => {
-        // Met à jour l'état pour retirer la tâche supprimée
+        setTasks(tasks.filter(task => task.id !== id));
       })
-      .catch(err => {
-        console.log(err);
-      });
+      .catch(err => console.log(err));
+  };
+
+  const updateTask = (id, updatedTask) => {
+    axios.put(`http://localhost:8000/api/tasks/${id}`, updatedTask)
+      .then(() => {
+        setTasks(tasks.map(task => (task.id === id ? updatedTask : task)));
+      })
+      .catch(err => console.log(err));
   };
 
   return (
     <div className='container'>
-      <AddTask />
+      <AddTask refreshTasks={fetchTasks} />
       <div className='row'>
-        <h3 className='text-center'>List des tasks</h3>
-        {tasks.map((task, index) => (
-          <div className='col col-md-4' key={index}>
-            <CardTask task={task}  deleteTaskList={deleteTask(task.id)}/>
+        <h3 className='text-center'>Liste des tâches</h3>
+        {tasks.map((task) => (
+          <div className='col col-md-4' key={task.id}>
+            <CardTask 
+              task={task} 
+              deleteTask={deleteTask} 
+              updateTask={updateTask} // Passez la fonction de mise à jour
+            />
           </div>
         ))}
       </div>
